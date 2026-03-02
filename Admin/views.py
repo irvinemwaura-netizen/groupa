@@ -1,9 +1,13 @@
 from gc import get_objects
-
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.shortcuts import render, redirect, get_object_or_404
 from Admin.models import Student
+from django.contrib.auth import authenticate, login, logout
 
 # Create your views here.
+@login_required
 def index(request):
     students = Student.objects.all()
     return render(request, 'index.html', {'students': students})
@@ -46,3 +50,22 @@ def delete_record(request, pk):
     if request.method == "POST":
         students.delete()
         return redirect('index')  # change to your list page name
+def sign_up(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+
+        if User.objects.filter(username=username).exists():
+            messages.error(request, 'Username already exists')
+            return redirect('sign_up')
+        user = User.objects.create_user(
+            username=username,
+            email=email,
+            password=password)
+        login(request, user)
+        return redirect('index')
+    return render(request, 'sign_up.html')
+def log_in(request):
+
+    return render(request, 'log_in.html')
