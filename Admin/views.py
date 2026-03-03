@@ -49,7 +49,7 @@ def delete_record(request, pk):
 
     if request.method == "POST":
         students.delete()
-        return redirect('index')  # change to your list page name
+    return redirect('index')  # change to your list page name
 def sign_up(request):
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -58,7 +58,7 @@ def sign_up(request):
 
         if User.objects.filter(username=username).exists():
             messages.error(request, 'Username already exists')
-            return redirect('sign_up')
+            return redirect('log_in')
         user = User.objects.create_user(
             username=username,
             email=email,
@@ -67,5 +67,17 @@ def sign_up(request):
         return redirect('index')
     return render(request, 'sign_up.html')
 def log_in(request):
-
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect('index')
+        else:
+            messages.error(request, 'Invalid username or password')
+            return redirect('log_in')
     return render(request, 'log_in.html')
+def logout_view(request):
+    logout(request)
+    return redirect('log_in')
