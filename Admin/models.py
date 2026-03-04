@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db import models
 from datetime import date
 
@@ -13,4 +14,14 @@ class Student(models.Model):
     def __str__(self):
         return self.name
 
+class Payment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    phone = models.CharField(max_length=20)
+    amount = models.IntegerField()
+    checkout_request_id = models.CharField(max_length=100, blank=True, null=True)
+    status = models.CharField(max_length=20, default='Pending')
+    created_at = models.DateTimeField(auto_now_add=True)
 
+
+    def __str__(self):
+        return self.phone
